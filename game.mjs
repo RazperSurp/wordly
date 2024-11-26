@@ -40,7 +40,7 @@ const DICTIONARY = {
 }
 
 export default class Game {
-    _DEBUG_ENABLED = false;
+    _DEBUG_ENABLED = true;
     _DEBUG_WORD_INDEX = 42;
     _DEBUG_WORD;
 
@@ -62,6 +62,9 @@ export default class Game {
         CORRECT: 1
     }
 
+    _DISABLED_LETTERS = [];
+
+    GAME_STATUS_CONTAINER = document.getElementById('game-status');
     KEYBOARD_CONTAINER = document.getElementById('keyboard');
     GAME_FIELD_CONTAINER = document.getElementById('game-field');
     TRIES_COUNT_CONTAINER = document.getElementById('tries-count');
@@ -88,18 +91,27 @@ export default class Game {
         if (doStart) {
             this._CARET_CURRENT_POS = -1;
 
+            this._disableLetter();
             this.changeCaret();
 
             this._WORD = DICTIONARY.WORDS[Math.round(Math.random() * DICTIONARY.WORDS.length)];
 
-            this._TRIES_LIST = [];
             this._TRIES_COUNT = 5;
+            this._TRIES_LIST = [];
             this._INPUT = [];
+            this._DISABLED_LETTERS = [];
+            
+            this.GAME_STATUS_CONTAINER.innerHTML = '';
 
             if (this.GAME_FIELD_CONTAINER.classList.contains('win')) this.GAME_FIELD_CONTAINER.classList.remove('win');
             if (this.GAME_FIELD_CONTAINER.classList.contains('lose')) this.GAME_FIELD_CONTAINER.classList.remove('lose');
 
-            this.getCells().forEach(cell => { if (cell.classList.contains('win')) cell.classList.remove('win') })
+            this.getCells().forEach(cell => { 
+                if (cell.classList.contains('win')) cell.classList.remove('win');
+                if (cell.classList.contains('correct')) cell.classList.remove('correct');
+                if (cell.classList.contains('incorrect')) cell.classList.remove('incorrect');
+                if (cell.classList.contains('wrong-pos')) cell.classList.remove('wrong-pos');
+            })
 
             if (this._DEBUG_ENABLED) this._sendDebug(`this._WORD: ${this._WORD}`);
         }
@@ -115,9 +127,10 @@ export default class Game {
             
             let jumpDelay = 0;
             this.getCells().forEach(cell => { setTimeout(() => { cell.classList.add('win') }, 50 * jumpDelay); jumpDelay++ })
+            this.GAME_STATUS_CONTAINER.innerHTML = `Поздравляю! Вы угадали слово <span>${this._WORD}</span>!`
         } else {
             this.GAME_FIELD_CONTAINER.classList.add('lose');
-            // this.getCells().forEach(cell => { cell.classList.add('win') })
+            this.GAME_STATUS_CONTAINER.innerHTML = `Вы проиграли! Было задано слово <span>${this._WORD}</span>!`
         }
 
         this.triggerGame(false);
@@ -153,18 +166,50 @@ export default class Game {
     
         let compareResults = [];
 
-        GUESSED_WORD_SPLITTED.forEach((letter, i) => {
-            if (this._INPUT[i] == letter) compareResults.push(this._COMPARSION_STATUS.CORRECT);
+        this._INPUT.forEach((letter, i) => {
+            if (letter == GUESSED_WORD_SPLITTED[i]) compareResults.push(this._COMPARSION_STATUS.CORRECT);
             else {
-                if (this._INPUT.find(inputLetter => inputLetter == letter)) compareResults.push(this._COMPARSION_STATUS.WRONG_POS);
-                else compareResults.push(this._COMPARSION_STATUS.INCORRECT);
+                if (GUESSED_WORD_SPLITTED.find(guessedLetter => guessedLetter.toLowerCase() == letter.toLowerCase()) !== undefined) compareResults.push(this._COMPARSION_STATUS.WRONG_POS);
+                else {
+                    this._disableLetter(letter);
+                    compareResults.push(this._COMPARSION_STATUS.INCORRECT);
+                }
             }
-        });
+        })
+
+        // GUESSED_WORD_SPLITTED.forEach((letter, i) => {
+        //     if (this._INPUT[i] == letter) compareResults.push(this._COMPARSION_STATUS.CORRECT);
+        //     else {
+        //         console.log(letter, this._INPUT, this._INPUT.find(inputLetter => inputLetter.toLowerCase() == letter.toLowerCase()) !== undefined);
+        //         if ((this._INPUT.find(inputLetter => inputLetter.toLowerCase() == letter.toLowerCase())) !== undefined) compareResults.push(this._COMPARSION_STATUS.WRONG_POS);
+        //         else {
+        //             this._disableLetter(this._INPUT[i]);
+        //             compareResults.push(this._COMPARSION_STATUS.INCORRECT);
+        //         }
+        //     }
+        // });
 
         return {
             answered: compareResults.find(result => (result == this._COMPARSION_STATUS.INCORRECT || result == this._COMPARSION_STATUS.WRONG_POS)) === undefined,
             results: compareResults
         };
+    }
+
+    _colorCells(compareResults = []) {
+        if (compareResults.length > 0) compareResults.forEach((result, addr) => {
+            this._findCell(addr).classList.add(
+                result == this._COMPARSION_STATUS.CORRECT  
+                    ? 'correct'
+                    : result == this._COMPARSION_STATUS.INCORRECT 
+                        ? 'incorrect'
+                        : 'wrong-pos'
+
+            );
+        }); else this.getCells().forEach(cell => {
+            if (cell.classList.contains('correct')) cell.classList.remove('correct');
+            if (cell.classList.contains('incorrect')) cell.classList.remove('incorrect');
+            if (cell.classList.contains('wrong-pos')) cell.classList.remove('wrong-pos');
+        })
     }
 
     _checkGuess() {
@@ -175,19 +220,29 @@ export default class Game {
 
         if (COMPARSION_RESULTS.answered) this.finishGame();
         else {
-
             this.triggerKeyboard(false);
 
             for (let i = this._CARET_CURRENT_POS; i > 0; i--) {
                 this.changeCaret(false);
             }
 
-            this._TRIES_LIST.push(this._INPUT.join(''));
+            let attemptHTML = '';
+            COMPARSION_RESULTS.results.forEach((result, addr) => {
+                let classname = result == this._COMPARSION_STATUS.CORRECT  
+                    ? 'correct'
+                    : result == this._COMPARSION_STATUS.INCORRECT 
+                        ? 'incorrect'
+                        : 'wrong-pos';
+
+                attemptHTML += `<span class="${classname}">${this._INPUT[addr]}</span>`
+            })
+            this._TRIES_LIST.push(attemptHTML);
 
 
             this.GAME_FIELD_CONTAINER.classList.add('wrong');
             setTimeout(() => { this.GAME_FIELD_CONTAINER.classList.remove('wrong') }, 1000);
 
+            this._colorCells(COMPARSION_RESULTS.results);
             if (this._TRIES_COUNT == 0) this.finishGame(false);
             else setTimeout(() => {
                 this.getCells().forEach(cell => {
@@ -196,12 +251,22 @@ export default class Game {
                 })
 
                 this.triggerKeyboard();
+                this._colorCells();
             }, 1000);
 
             this._INPUT = [];
         }
 
         this.updateGameInfo();
+    }
+
+    _disableLetter(letter = null) {
+        if (letter !== null) {
+            const CODE = Object.keys(DICTIONARY.KEYBOARD)[Object.values(DICTIONARY.KEYBOARD).findIndex(dictionaryLetter => dictionaryLetter == letter)];
+
+            this._DISABLED_LETTERS.push(CODE);
+            this.KEYBOARD_CONTAINER.querySelector(`button[data-value="${CODE}"]`).classList.add('disabled');
+        } else this.KEYBOARD_CONTAINER.querySelectorAll(`button.disabled`).forEach(btn => { btn.classList.remove('disabled') });
     }
 
     enterLetter(letter) {
@@ -242,14 +307,14 @@ export default class Game {
         if (this._DEBUG_ENABLED) this._sendDebug(`Изменён статус клавиатуры: ${doEnable}`);
 
         if (doEnable) {
-            if (this.KEYBOARD_CONTAINER.classList.contains('disable')) this.KEYBOARD_CONTAINER.classList.remove('disable');
+            if (this.KEYBOARD_CONTAINER.classList.contains('disabled')) this.KEYBOARD_CONTAINER.classList.remove('disabled');
             this.GAME_FIELD_CONTAINER.querySelectorAll('td').forEach(cell => {
                 if (cell.hasAttribute('data-value')) cell.removeAttribute('data-value');
                 cell.innerHTML = '';
             })
 
             document.onkeydown = e => {
-                if (Object.keys(DICTIONARY.KEYBOARD).find(key => e.keyCode == key)) {
+                if (Object.keys(DICTIONARY.KEYBOARD).find(key => e.keyCode == key) && !this._DISABLED_LETTERS.find(code => code == e.keyCode)) {
                     this.enterLetter(DICTIONARY.KEYBOARD[e.keyCode]);
                     const KEYBOARD_KEY = document.querySelector(`#keyboard button[data-value="${e.keyCode}"]`);
                     KEYBOARD_KEY.classList.add('pressed');
@@ -258,10 +323,10 @@ export default class Game {
             }
 
             this.KEYBOARD_CONTAINER.querySelectorAll('button').forEach(btn => {
-                btn.onclick = e => { this.enterLetter(DICTIONARY.KEYBOARD[btn.dataset.value]) }
+                btn.onclick = e => { if (!this._DISABLED_LETTERS.find(code => code == btn.dataset.value)) this.enterLetter(DICTIONARY.KEYBOARD[btn.dataset.value]) }
             })
         } else {
-            if (this.KEYBOARD_CONTAINER.classList.contains('disable')) this.KEYBOARD_CONTAINER.classList.add('disable');
+            if (this.KEYBOARD_CONTAINER.classList.contains('disabled')) this.KEYBOARD_CONTAINER.classList.add('disabled');
 
             document.onkeydown = null;
             this.KEYBOARD_CONTAINER.querySelectorAll('button').forEach(btn => {

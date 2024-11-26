@@ -59,6 +59,16 @@ body > main {
     transition: .15s;
     position: relative;
     bottom: 0px;
+    color: transparent;
+}
+
+#game-field td[data-value] {
+    color: black;
+}
+
+#game-field td.wrong-pos {
+    box-shadow: 0 0 10px 0 #FF8000;
+    background-color: #FF800036 !important;
 }
 
 #game-field.win td.win {
@@ -75,11 +85,26 @@ body > main {
     }
 }
 
+span.correct {
+    color: #008000;
+}
+
+span.incorrect {
+    color: #FF0000;
+    font-weight: 100;
+}
+
+span.wrong-pos {
+    color: #FF8000;
+}
+
+#game-field td.correct,
 #game-field.win td {
     box-shadow: 0 0 10px 0 #008000;
     background-color: #00800036 !important;
 }
 
+#game-field td.incorrect,
 #game-field.lose td {
     box-shadow: 0 0 10px 0 #FF0000;
     background-color: #FF000036 !important;
@@ -104,6 +129,15 @@ body button {
 
 body button:hover {
     background: #db7094b4;
+}
+
+#keyboard.disabled button,
+body button.disabled {
+    background: #ffbebe;
+    cursor: not-allowed;
+    pointer-events: none;
+    color: #ff0000;
+    opacity: 0.5;
 }
 
 body button:active,
@@ -168,4 +202,12 @@ button[type="reset"] {
     } 100% {
         left: 0px;
     }
+}
+
+#tries-list {
+    font-size: xx-large;
+}
+
+#game-status {
+    font-size: x-large;
 }
