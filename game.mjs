@@ -34,12 +34,13 @@ const DICTIONARY = {
         "83": "Ы",
         "190": "Ю",
         "90": "Я",
-        "8": "BACKSPACE"
+        "8": "BACKSPACE",
+        "13": "ENTER"
     }
 }
 
 export default class Game {
-    _DEBUG_ENABLED = true;
+    _DEBUG_ENABLED = false;
     _DEBUG_WORD_INDEX = 42;
     _DEBUG_WORD;
 
@@ -95,6 +96,11 @@ export default class Game {
             this._TRIES_COUNT = 5;
             this._INPUT = [];
 
+            if (this.GAME_FIELD_CONTAINER.classList.contains('win')) this.GAME_FIELD_CONTAINER.classList.remove('win');
+            if (this.GAME_FIELD_CONTAINER.classList.contains('lose')) this.GAME_FIELD_CONTAINER.classList.remove('lose');
+
+            this.getCells().forEach(cell => { if (cell.classList.contains('win')) cell.classList.remove('win') })
+
             if (this._DEBUG_ENABLED) this._sendDebug(`this._WORD: ${this._WORD}`);
         }
 
@@ -105,9 +111,13 @@ export default class Game {
         if (this._DEBUG_ENABLED) this._sendDebug(`finishGame: this._WORD: ${this._WORD}, this._INPUT: ${this._INPUT.join('')} {"isWin": ${isWin ? 'true' : 'false'}}`)
 
         if (isWin) {
-
+            this.GAME_FIELD_CONTAINER.classList.add('win');
+            
+            let jumpDelay = 0;
+            this.getCells().forEach(cell => { setTimeout(() => { cell.classList.add('win') }, 50 * jumpDelay); jumpDelay++ })
         } else {
-
+            this.GAME_FIELD_CONTAINER.classList.add('lose');
+            // this.getCells().forEach(cell => { cell.classList.add('win') })
         }
 
         this.triggerGame(false);
@@ -239,7 +249,12 @@ export default class Game {
             })
 
             document.onkeydown = e => {
-                if (Object.keys(DICTIONARY.KEYBOARD).find(key => e.keyCode == key)) this.enterLetter(DICTIONARY.KEYBOARD[e.keyCode]);
+                if (Object.keys(DICTIONARY.KEYBOARD).find(key => e.keyCode == key)) {
+                    this.enterLetter(DICTIONARY.KEYBOARD[e.keyCode]);
+                    const KEYBOARD_KEY = document.querySelector(`#keyboard button[data-value="${e.keyCode}"]`);
+                    KEYBOARD_KEY.classList.add('pressed');
+                    setTimeout(() => { KEYBOARD_KEY.classList.remove('pressed') }, 150);
+                }
             }
 
             this.KEYBOARD_CONTAINER.querySelectorAll('button').forEach(btn => {
