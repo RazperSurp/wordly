@@ -40,7 +40,7 @@ const DICTIONARY = {
 }
 
 export default class Game {
-    _DEBUG_ENABLED = true;
+    _DEBUG_ENABLED = false;
     _DEBUG_WORD_INDEX = 42;
     _DEBUG_WORD;
 
