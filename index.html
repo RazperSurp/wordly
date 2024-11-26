@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>! WORDLY !</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header>
+        <h1> ! WORDLY ! </h1>
+        <p> Попробуй угадать случайное слово из 5 букв! </p>
+    </header>
+    <main>
+        <button type="reset" id="start-game"> Старт! </button>
+        <div class="info">
+            <p class="game-info"> Попыток осталось: <span id="tries-count"> 5 </span></p>
+            <p class="game-info" id="game-status"> </p>
+        </div>
+        <table id="game-field">
+            <tr>
+                <td data-addr="0"> </td>
+                <td data-addr="1"> </td>
+                <td data-addr="2"> </td>
+                <td data-addr="3"> </td>
+                <td data-addr="4"> </td>
+            </tr>
+        </table>
+        <div id="keyboard">
+            <button type="button" data-value="70"> А </button>
+            <button type="button" data-value="188"> Б </button>
+            <button type="button" data-value="68"> В </button>
+            <button type="button" data-value="85"> Г </button>
+            <button type="button" data-value="76"> Д </button>
+            <button type="button" data-value="84"> Е </button>
+            <button type="button" data-value="192"> Ё </button>
+            <button type="button" data-value="186"> Ж </button>
+            <button type="button" data-value="80"> З </button>
+            <button type="button" data-value="66"> И </button>
+            <button type="button" data-value="81"> Й </button>
+            <button type="button" data-value="82"> К </button>
+            <button type="button" data-value="75"> Л </button>
+            <button type="button" data-value="86"> М </button>
+            <button type="button" data-value="89"> Н </button>
+            <button type="button" data-value="74"> О </button>
+            <button type="button" data-value="71"> П </button>
+            <button type="button" data-value="72"> Р </button>
+            <button type="button" data-value="67"> С </button>
+            <button type="button" data-value="78"> Т </button>
+            <button type="button" data-value="69"> У </button>
+            <button type="button" data-value="65"> Ф </button>
+            <button type="button" data-value="219"> Х </button>
+            <button type="button" data-value="87"> Ц </button>
+            <button type="button" data-value="88"> Ч </button>
+            <button type="button" data-value="73"> Ш </button>
+            <button type="button" data-value="79"> Щ </button>
+            <button type="button" data-value="221"> Ъ </button>
+            <button type="button" data-value="222"> Э </button>
+            <button type="button" data-value="77"> Ь </button>
+            <button type="button" data-value="83"> Ы </button>
+            <button type="button" data-value="190"> Ю </button>
+            <button type="button" data-value="90"> Я </button>
+            <button type="button" data-value="8"> BACKSPACE </button>
+        </div>
+        <ol id="tries-list">
+            
+        </ol>
+    </main>
+    <footer>
+
+    </footer>
+</body>
+<script type="module" src="main.mjs"> </script>
+</html>

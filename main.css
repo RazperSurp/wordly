@@ -1,0 +1,122 @@
+body {
+    margin: unset;
+    padding: unset;
+}
+
+body * {
+    font-family: "Poiret One", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+}
+
+body > header h1,
+body > header p {
+    font-weight: 800;
+    text-align: center;
+}
+
+body > main {
+    display: flex;
+    max-width: 800px;
+    margin: auto;
+    flex-direction: column;
+    align-items: center;
+}
+
+#game-field {
+    border-collapse: separate;
+    border-spacing: 10px;
+    margin: auto;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    width: 100%;
+    border-bottom: 1px solid black;
+    position: relative;
+}
+
+#game-field tr {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+#game-field td {
+    width: 100px;
+    max-width: 100px;
+    height: 100px;
+    max-height: 100px;
+    border-radius: 5px;
+    border: 1px solid black;
+    overflow: hidden;
+    display: inline-block;
+    white-space: nowrap;
+    font-size: 72px;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.game-info {
+    margin: auto;
+    width: fit-content;
+}
+
+button[type="reset"] {
+    width: 200px;
+    height: 50px;
+    border-radius: 5px;
+    border: 1px solid black;
+    padding: 5px;
+    font-size: 20px;
+    margin: auto;
+    margin-bottom: 10px;
+}
+
+.info {
+    padding: 10px;
+    border-top: 1px solid black;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#keyboard {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+#keyboard button {
+    width: 50px;
+    height: 50px;
+    border: 1px solid black;
+    padding: 5px;
+    box-sizing: border-box;
+    font-size: 20px;
+    border-radius: 5px;
+}
+
+#game-field.wrong {
+    animation: shake .5s linear;
+}
+
+@keyframes shake {
+    0% {
+        left: 0px;
+    } 20% {
+        left: -5px;
+    } 40% {
+        left: 5px;
+    } 60% {
+        left: -5px;
+    } 80% {
+        left: 5px;
+    } 100% {
+        left: 0px;
+    }
+}
